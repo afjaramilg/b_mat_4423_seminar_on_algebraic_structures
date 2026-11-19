@@ -1,0 +1,169 @@
+\documentclass{article}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{geometry}
+\usepackage{parskip}
+\usepackage{amsthm}
+
+\usepackage[style=ieee]{biblatex}
+\addbibresource{references.bib}
+
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\newcommand{\abs}[1]{\lvert#1\rvert}
+
+
+\title{Seminar on Graph Theory - Talk 5}
+\author{Andres Felipe Jaramillo Garces}
+\date{November 2026}
+
+\begin{document}
+\maketitle
+\section{Origin of the problem}
+\cite[\nopp 4.1]{HLM1}
+\begin{itemize}
+  \item The minimal closed curve problem. which curve encloses the most area given a certai length?
+  \item exempify with string
+  \item Turn the question around: Given a certain area, what is the shortest closed curve that emcompasses it?
+  \item Mention the edge isometric parameter and the vertex isopetrimetric parameter
+  \item clarify that the 'area' becomes the number of vertices in a given subset. These two parameters represent two ways to define the perimeter
+  \item (write them down) The edge isoperimetic parameter measures the perimeter of an area by counting the outward going edges.
+  \item The vertex isoperimetric parameter measures the perimeter by instead counting the nodes adjacent to the subset but external to it. 
+  \item Notice that these are different because HLM allows graphs to have multiple edges between them and to themselves, and the adjacency matrix reflects this in its entries.
+  \item this problem is in general hard to solve, because although discrete, the obvious answer is just to test all prossible subset that fulfill the requirement.
+\end{itemize}
+\printbibliography
+\section{Construction of the Laplacian}
+\begin{itemize}
+  \item the incidence matrix: $K_{u,e} = +1$ if $e$ exits $u$, $-1$ if $e$ enters $u$, $0$ otherwise. Its a $V \times E$ matrix.
+  \item The gradient: Since a function $f: V \rightarrow R$ on G is a vector, we define $K_{u, e}$ as 1 is the edge $e$ exits $u$ and -1 if $e$ enters u and 0 otherwise. Mind you, this goes back to the interpretation of the edges of the undirected graph as a collection of pairs of directed edges. The gradient is then $fK$ on $E$ (not $V$) as $(fK)_e = f_u - f_v$. 
+  \item SHOW EXAMPLE
+  \item Let $g: E \rightarrow R$. The divergence maps $g$ to $Kg$, which is indexed by $V$, in particular $(Kg)_v = \sum_{\text{e exits v}} g_e - \sum_{\text{e enters v}} g_e$
+  \item SHOW EXAMPLE
+  \item The laplacian maps $f: V \rightarrow R$ to $Lf = KK^Tf$. We have that $L_{u,v} = -1$ if $(u,v) \in E$, $deg(u)$ if $u = v$, where $u$ and $v$ are vertices, or 0 otherwise.
+  \item you can explain the multiplication $KK^T$ there
+  \item $fLf = || fK||^2 = \sum_{(u, v) \in E} (f_u - f_v)^2$
+  \item further analysis reveals that $L = dI - A_G$. The paper is ambiguous here with its definitions since it previously defined graphs as allowin multiple edges and self-edges. thi new definition would seem to imply the contrary, but whatever.
+\end{itemize}
+\section{The central result}
+\begin{itemize}
+  \item without going into too much detail, there is a result involving the real laplacian and an analogue to the isomeripetric quantities discussed above which relates said analogue with the eigenvalue of the laplacian.
+  \item $\frac{d - \lambda}{2} \leq h(G) \leq \sqrt{2d(d -\lambda)}$, there are examples proving both bounds are tight
+\end{itemize}
+
+\subsection{Large spectral gap implies high expansion}
+We want to prove the lower bound. First rearrage $\lambda \geq d - 2h(G)$. Before processing we recall that the first eigenvalue of the adjacency matrix is $1/\sqrt{n}$, and the first eigenvector is the all-ones vector \textbf{1}. Instead of setting a bound with $\lambda$, we want to prove this using a different relation. First we pick $f \perp 1$. The reason why will become clear soon. We want to find an $f$ such that the Rayleigh Coefficient fulfills $fAf^T/\norm{f}^2 \geq d - 2h(G)$. Why? 
+
+\begin{align*}
+  f &= \sum^n_{i=1} c_i v_i = \sum^n_{i=2} c_i v_i \\
+  \intertext{Since $f$ was chosen as being perpendicular to \textbf{1}} \\
+  \frac{fAf^T}{\norm{f}^2} &= \frac{\sum^n_{i=2} c_i^2 \lambda_i}{\norm{f}^2} = \frac{\sum^n_{i=2} c_i^2 \lambda_i}{\sum^n_{i=2} c_i^2} \leq \frac{\lambda\sum^n_{i=2} c_i^2}{\sum^n_{i=2} c_i^2} = \lambda
+\end{align*}
+
+The vector we pick is $f = \abs{\overline{S}}1_S - \abs{S}1_{\overline{S}}$, where $1_S$ is the characteristic vector of a subset $S$ which fulfills $h(G) = \abs{E({S, \overline{S})}}/\abs{S}$ with $\abs{S} \leq n/2$.
+
+Notice that $1_S\cdot1_{\overline{S}} = \sum_{v \in V} (1_X)(1_Y)_v = \sum_{x \in X \cap Y} 1 = \abs{X \cap Y}$
+
+And $1_SA1_S^t = \sum_{u \in S}\sum_{v \in S}A_{uv} = 2\abs{E(S)}$.
+
+And $1_SA1_{\overline{S}}^t = \sum_{u \in S}\sum_{v \in \overline{S}}A_{uv} = 2\abs{E(S, \overline{S})}$.
+
+\subsection{High expansion implies large spectral gap }
+To prove the upper bound, we need only find an $S$ for which it holds that $\frac{E(S, \overline{S})}{\abs{S}}$ is smaller than we want it. Thus we want to minimize the numerator to improve our chances.
+
+We pick the eigenvector $g$ to the 2nd eigenvalue $\lambda$. We note that $g \perp v_1 =$ \textbf{1}. We obtain
+
+
+\begin{align*}
+  fLf^t = f(dI - A)f^t = d(ff^t) - fAf^t
+\end{align*}
+
+Let $G = (V, E)$ be a finite, connected, $d$-regular undirected graph with $\vert{}V\vert{} = n$ and edge expansion ratio $h = h(G) = \min_{S \subseteq V,\, 0 < \vert{}S\vert{} \le n/2} \frac{\vert{}E(S, \overline{S})\vert{}}{\vert{}S\vert{}}$. From Section 4.5.2, the vector $f = g^+ \in \mathbb{R}^V$ satisfies $f_v = \max(g_v, 0) \ge 0$ for all $v \in V$, and its support $V^+ = \{v \in V : f_v > 0\}$ satisfies $\vert{}V^+\vert{} \le n/2$.
+
+The vertices of $G$ are indexed as $V = \{1, 2, \dots, n\}$ in non-increasing order of the coordinates of $f$:
+
+
+$$f_1 \ge f_2 \ge \dots \ge f_n \ge 0$$
+
+. Letting $k = \vert{}V^+\vert{}$, this ordering implies:
+
+* $V^+ = \{1, 2, \dots, k\}$ with $f_1 \ge f_2 \ge \dots \ge f_k > 0$,
+* $V \setminus V^+ = \{k+1, \dots, n\}$ with $f_{k+1} = f_{k+2} = \dots = f_n = 0$,
+* $k \le n/2 \le n - 1$ (for $n \ge 2$), so $V^+ \subseteq \{1, \dots, n-1\}$ and $f_{k+1} = 0$ is well-defined.
+
+
+
+For each $i \in \{1, \dots, n-1\}$, the level set is defined as $[i] = \{1, \dots, i\}$, with complement $\overline{[i]} = V \setminus [i] = \{i+1, \dots, n\}$. The quantity $B_f$ is defined by
+
+
+$$B_f = \sum_{(x,y) \in E} \vert{}f_x^2 - f_y^2\vert{}$$
+
+.
+
+---
+
+The derivation establishes the chain
+
+
+$$B_f \stackrel{(1)}{=} \sum_{(x,y) \in E,\, x < y} (f_x^2 - f_y^2) \stackrel{(2)}{=} \sum_{(x,y) \in E,\, x < y} \sum_{i=x}^{y-1} (f_i^2 - f_{i+1}^2) \stackrel{(3)}{=} \sum_{i=1}^{n-1} (f_i^2 - f_{i+1}^2) \cdot \vert{}E([i], \overline{[i]})\vert{}$$
+
+$$\stackrel{(4)}{=} \sum_{i \in V^+} (f_i^2 - f_{i+1}^2) \cdot \vert{}E([i], \overline{[i]})\vert{} \stackrel{(5)}{\ge} h \sum_{i \in V^+} (f_i^2 - f_{i+1}^2) \cdot i \stackrel{(6)}{=} h \sum_{i \in V^+} f_i^2 \stackrel{(7)}{=} h \cdot \Vert{}f\Vert{}^2$$
+
+.
+
+**1. Removal of the Absolute Value**
+Each undirected non-loop edge $\{u, v\} \in E$ has a unique ordered representation $(x, y)$ with $x < y$ (and any self-loop with $x = y$ contributes $\vert{}f_x^2 - f_x^2\vert{} = 0$). Because $x < y$ implies $f_x \ge f_y \ge 0$, and $t \mapsto t^2$ is monotonically non-decreasing on $[0, \infty)$, it follows that $f_x^2 - f_y^2 \ge 0$ and hence $\vert{}f_x^2 - f_y^2\vert{} = f_x^2 - f_y^2$.
+
+**2. Telescoping Expansion**
+For any integers $1 \le x < y \le n$, writing $f_x^2 - f_y^2$ as a telescoping sum of consecutive differences gives:
+
+
+$$\sum_{i=x}^{y-1} (f_i^2 - f_{i+1}^2) = (f_x^2 - f_{x+1}^2) + (f_{x+1}^2 - f_{x+2}^2) + \dots + (f_{y-1}^2 - f_y^2) = f_x^2 - f_y^2$$
+
+.
+
+**3. Interchange of Summation (Double Counting by Level-Set Cuts)**
+For any $1 \le x < y \le n$ and $1 \le i \le n-1$, the index condition $x \le i \le y - 1$ is equivalent to $x \le i$ and $y \ge i + 1$, which is precisely the condition $x \in [i]$ and $y \in \overline{[i]}$ (i.e., the edge $(x, y)$ belongs to the cut $E([i], \overline{[i]})$). Introducing the indicator $\mathbf{1}_{\{x \le i \le y-1\}}$ and interchanging the order of summation yields:
+
+
+$$\begin{aligned} \sum_{(x,y) \in E,\, x < y} \sum_{i=x}^{y-1} (f_i^2 - f_{i+1}^2) &= \sum_{(x,y) \in E,\, x < y} \sum_{i=1}^{n-1} (f_i^2 - f_{i+1}^2) \cdot \mathbf{1}_{\{x \le i \le y-1\}} \\ &= \sum_{i=1}^{n-1} (f_i^2 - f_{i+1}^2) \sum_{(x,y) \in E,\, x < y} \mathbf{1}_{\{x \in [i],\, y \in \overline{[i]}\}} \\ &= \sum_{i=1}^{n-1} (f_i^2 - f_{i+1}^2) \cdot \vert{}E([i], \overline{[i]})\vert{} \end{aligned}$$
+
+.
+
+**4. Restriction of the Summation Domain to $V^+$**
+Since $V^+ = \{1, \dots, k\}$ and $f_j = 0$ for all $j \in \{k+1, \dots, n\}$, every index $i \in \{k+1, \dots, n-1\}$ satisfies both $f_i = 0$ and $f_{i+1} = 0$, so $f_i^2 - f_{i+1}^2 = 0$. Dropping these vanishing terms restricts the summation from $\{1, \dots, n-1\}$ to $V^+ = \{1, \dots, k\}$.
+
+**5. Application of the Edge Expansion Ratio**
+For every $i \in V^+ = \{1, \dots, k\}$, the level set $[i]$ has cardinality $\vert{}[i]\vert{} = i$ satisfying $0 < \vert{}[i]\vert{} \le \vert{}V^+\vert{} \le n/2$. By the definition of $h = h(G)$:
+
+
+$$\frac{\vert{}E([i], \overline{[i]})\vert{}}{\vert{}[i]\vert{}} \ge h \implies \vert{}E([i], \overline{[i]})\vert{} \ge h \cdot i.$$
+
+
+Because $f_i \ge f_{i+1} \ge 0$, each factor $(f_i^2 - f_{i+1}^2)$ is non-negative. Multiplying the inequality $\vert{}E([i], \overline{[i]})\vert{} \ge h \cdot i$ by $(f_i^2 - f_{i+1}^2) \ge 0$ and summing over all $i \in V^+$ preserves the inequality:
+
+
+$$\sum_{i \in V^+} (f_i^2 - f_{i+1}^2) \cdot \vert{}E([i], \overline{[i]})\vert{} \ge \sum_{i \in V^+} (f_i^2 - f_{i+1}^2) \cdot h i = h \sum_{i \in V^+} (f_i^2 - f_{i+1}^2) \cdot i$$
+
+.
+
+**6. Summation by Parts (Collapsing the Telescopic Sum)**
+Reindexing the second term of $\sum_{i=1}^{k} i (f_i^2 - f_{i+1}^2)$ via $j = i + 1$:
+
+
+$$\begin{aligned} \sum_{i=1}^{k} i (f_i^2 - f_{i+1}^2) &= \sum_{i=1}^{k} i f_i^2 - \sum_{i=1}^{k} i f_{i+1}^2 \\ &= \sum_{i=1}^{k} i f_i^2 - \sum_{j=2}^{k+1} (j - 1) f_j^2 \\ &= 1 \cdot f_1^2 + \sum_{i=2}^{k} \bigl(i - (i - 1)\bigr) f_i^2 - k f_{k+1}^2 \\ &= \sum_{i=1}^{k} f_i^2 - k f_{k+1}^2. \end{aligned}$$
+
+
+Because $k = \vert{}V^+\vert{}$ implies $k + 1 \notin V^+$, we have $f_{k+1} = 0$, so the boundary term $-k f_{k+1}^2$ vanishes, leaving $h \sum_{i \in V^+} f_i^2$.
+
+**7. Identification with $\Vert{}f\Vert{}^2$**
+Since $f_i = 0$ for all $i \in V \setminus V^+$,
+
+
+$$\Vert{}f\Vert{}^2 = \sum_{i \in V} f_i^2 = \sum_{i \in V^+} f_i^2 + \sum_{i \in V \setminus V^+} f_i^2 = \sum_{i \in V^+} f_i^2,$$
+
+
+yielding $h \sum_{i \in V^+} f_i^2 = h \cdot \Vert{}f\Vert{}^2$.
+
+
+\end{document}
+
